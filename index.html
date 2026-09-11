@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -14,581 +14,1015 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
-  tailwind.config = {
-    theme: {
-      extend: {
-        colors: {
-          ink:    '#08080a',
-          panel:  '#0f0f13',
-          accent: '#f5792a',
-          accent2:'#ffb057',
-          muted:  '#8b8b96',
-        },
-        fontFamily: {
-          display: ['"Space Grotesk"', 'system-ui', 'sans-serif'],
-          body:    ['Inter', 'system-ui', 'sans-serif'],
-        },
-      }
-    }
-  }
-</script>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,700;0,900;1,700&family=Nunito+Sans:ital,wght@0,400;0,700;1,400&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
 
 <style>
-  :root { color-scheme: dark; }
+/* ==================================================================
+   BERYL — commission card
+   Palette:  ink red #6b0707 · paper #f7f7f7 · desk #ededed
+   ================================================================== */
 
-  html, body { background-color: #08080a; }
+:root{
+  color-scheme: light;
 
-  /* ---- Background layers -------------------------------------------- */
-  .bg-fallback {
-    background:
-      radial-gradient(1000px 700px at 16% 6%,  rgba(245,121,42,.40), transparent 60%),
-      radial-gradient(900px 660px at 86% 74%,  rgba(96,84,255,.34), transparent 58%),
-      radial-gradient(760px 560px at 50% 104%, rgba(255,176,87,.22), transparent 60%),
-      radial-gradient(620px 480px at 92% 12%,  rgba(255,110,160,.14), transparent 62%),
-      linear-gradient(165deg, #1a1620 0%, #0c0b10 52%, #08080a 100%);
-  }
-  /* Drop your render at assets/bg.jpg — if it's missing, the gradient above shows. */
-  .bg-photo {
-    background-image: url('assets/bg.jpg');
-    background-size: cover;
-    background-position: center;
-    opacity: .55;
-  }
-  .grain {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E");
-    opacity: .07;
-  }
+  --red:        #6b0707;
+  --red-soft:   #8f1414;
+  --red-tint:   rgba(107,7,7,.07);
+  --red-line:   rgba(107,7,7,.22);
 
-  /* ---- Accordion ----------------------------------------------------- */
-  .panel-body {
-    display: grid;
-    grid-template-rows: 0fr;
-    transition: grid-template-rows .45s cubic-bezier(.22,1,.36,1), opacity .3s ease;
-    opacity: 0;
-  }
-  .panel-body > div { overflow: hidden; }
-  .panel.open .panel-body { grid-template-rows: 1fr; opacity: 1; }
-  .panel.open .chev { transform: rotate(180deg); }
-  .panel.open .panel-btn { color: #fff; }
-  .panel.open .panel-dot { background: #f5792a; box-shadow: 0 0 14px 2px rgba(245,121,42,.65); }
+  --paper:      #f7f7f7;
+  --desk:       #ededed;
+  --text:       #191919;
+  --text-soft:  #5a5a5a;
+  --text-faint: #8a8a8a;
 
-  /* ---- Price leader dots --------------------------------------------- */
-  .leader { display: flex; align-items: baseline; gap: .5rem; }
-  .leader .fill {
-    flex: 1 1 auto;
-    border-bottom: 1px dotted rgba(255,255,255,.18);
-    transform: translateY(-4px);
-  }
+  --radius:     9px;
+  --card-w:     880px;
+}
 
-  /* ---- Reveal on scroll ---------------------------------------------- */
-  .reveal { opacity: 0; transform: translateY(18px); transition: opacity .7s ease, transform .7s cubic-bezier(.22,1,.36,1); }
-  .reveal.in { opacity: 1; transform: none; }
+*,*::before,*::after{ box-sizing: border-box; }
 
-  @media (prefers-reduced-motion: reduce) {
-    .reveal, .panel-body { transition: none !important; }
-    .reveal { opacity: 1; transform: none; }
-  }
+html{ scroll-behavior: smooth; }
 
-  ::selection { background: #f5792a; color: #08080a; }
+body{
+  margin: 0;
+  background-color: var(--desk);
+  font-family: "Nunito Sans", system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
 
-  /* Thin scrollbar */
-  ::-webkit-scrollbar { width: 10px; }
-  ::-webkit-scrollbar-track { background: #08080a; }
-  ::-webkit-scrollbar-thumb { background: #26262e; border-radius: 999px; border: 3px solid #08080a; }
-  ::-webkit-scrollbar-thumb:hover { background: #3a3a45; }
+/* sprinkle / confetti wallpaper (filled in by the script at the bottom) */
+body::before{
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-repeat: repeat;
+  background-size: 384px auto;
+  pointer-events: none;
+}
+
+/* ---------- the card ------------------------------------------------ */
+.card{
+  width: 100%;
+  max-width: var(--card-w);
+  min-height: calc(100vh - 80px);
+  margin: 40px auto;
+  padding: 34px 38px 28px;
+  background: var(--paper);
+  border-radius: var(--radius);
+  box-shadow: 0 9px 16px rgba(0,0,0,.2);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------- navigation ---------------------------------------------- */
+.nav{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+.nav a{
+  flex: 1 1 108px;
+  max-width: 150px;
+  padding: 9px 10px;
+  border-radius: var(--radius);
+  background: var(--red);
+  color: #fff;
+  font-family: Nunito, system-ui, sans-serif;
+  font-size: 13px;
+  text-align: center;
+  text-decoration: none;
+  text-transform: lowercase;
+  transition: background .2s ease, transform .2s ease;
+  white-space: nowrap;
+}
+.nav a:hover{ background: var(--red-soft); transform: translateY(-1px); }
+.nav a.active{ background: #4d0404; box-shadow: inset 0 0 0 2px rgba(255,255,255,.25); }
+
+/* ---------- zigzag rules -------------------------------------------- */
+.zig{
+  border: 0;
+  height: 22px;
+  margin: 22px 0;
+  background-repeat: repeat-x;
+  background-position: center;
+  background-size: auto 8px;
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' width='512' height='512'%3E%3Cstyle%3Eline%7Bstroke-linecap:square;stroke-width:4px;stroke:%236b0707;vector-effect:non-scaling-stroke%7D%3C/style%3E%3Cline x1='256' y1='0' x2='0' y2='256'/%3E%3Cline x1='256' y1='512' x2='512' y2='256'/%3E%3C/svg%3E");
+}
+.zig.thin{ margin: 16px 0; opacity: .55; }
+
+/* ---------- tab panels ---------------------------------------------- */
+.tabs{ flex: 1 1 auto; }
+.tab{ display: none; }
+.tab.on{ display: block; animation: fade .45s ease both; }
+@keyframes fade{ from{ opacity:0; transform: translateY(8px); } to{ opacity:1; transform:none; } }
+
+/* ---------- type ----------------------------------------------------- */
+h1,h2,h3,h4{
+  font-family: Montserrat, system-ui, sans-serif;
+  text-transform: uppercase;
+  color: var(--red);
+  margin: 0;
+  line-height: 1.15;
+}
+h1{ font-size: 35px; font-weight: 900; letter-spacing: -.5px; }
+h2{ font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+h3{ font-size: 14px; font-weight: 700; letter-spacing: .06em; margin: 22px 0 10px; }
+h3:first-child{ margin-top: 0; }
+
+p{ margin: 0 0 14px; }
+p:last-child{ margin-bottom: 0; }
+a{ color: var(--red); }
+strong{ font-weight: 700; }
+.sub{ color: var(--text-soft); font-size: 13.5px; }
+.faint{ color: var(--text-faint); font-size: 12.5px; }
+.mark{ background: rgba(107,7,7,.14); padding: 0 3px; border-radius: 3px; }
+code{
+  font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+  font-size: 12.5px;
+  background: var(--red);
+  color: #fff;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+::selection{ background: var(--red); color: #fff; }
+
+/* ---------- home ------------------------------------------------------ */
+.home{
+  display: grid;
+  grid-template-columns: 285px 1fr;
+  gap: 34px;
+  align-items: center;
+}
+.portrait{
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: var(--radius);
+  background: #fff;
+  border: 2px solid var(--red-line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.portrait img{
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.portrait svg{ width: 74px; height: 74px; color: var(--red); opacity: .35; }
+
+.badge{
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 12px;
+  padding: 4px 11px;
+  border-radius: 999px;
+  background: var(--red);
+  color: #fff;
+  font-family: Nunito, sans-serif;
+  font-size: 11.5px;
+  text-transform: lowercase;
+}
+.dot{ width: 7px; height: 7px; border-radius: 50%; background: #6fe08a; box-shadow: 0 0 0 0 rgba(111,224,138,.7); animation: pulse 2s infinite; }
+@keyframes pulse{ 70%{ box-shadow: 0 0 0 7px rgba(111,224,138,0); } 100%{ box-shadow: 0 0 0 0 rgba(111,224,138,0); } }
+
+/* ---------- stat strip ------------------------------------------------ */
+.stats{
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 8px;
+  margin-top: 18px;
+}
+.stats div{
+  padding: 10px 6px;
+  border: 2px solid var(--red-line);
+  border-radius: var(--radius);
+  text-align: center;
+  background: var(--red-tint);
+}
+.stats b{
+  display: block;
+  font-family: Montserrat, sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--red);
+}
+.stats span{ font-size: 11px; text-transform: lowercase; color: var(--text-soft); }
+
+/* ---------- boxes & lists --------------------------------------------- */
+.box{
+  border: 2px solid var(--red-line);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  background: var(--red-tint);
+}
+.box.plain{ background: transparent; }
+.grid2{ display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.grid3{ display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+
+ul.ticks, ul.crosses, ul.plainlist{ margin: 0; padding: 0; list-style: none; }
+ul.ticks li, ul.crosses li{ padding-left: 20px; position: relative; margin-bottom: 5px; font-size: 14px; }
+ul.ticks li::before{ content: "✓"; position: absolute; left: 0; color: var(--red); font-weight: 700; }
+ul.crosses li::before{ content: "✗"; position: absolute; left: 0; color: var(--text-faint); font-weight: 700; }
+
+ol.steps{ counter-reset: s; margin: 0; padding: 0; list-style: none; }
+ol.steps li{
+  counter-increment: s;
+  position: relative;
+  padding-left: 34px;
+  margin-bottom: 14px;
+}
+ol.steps li::before{
+  content: counter(s,decimal-leading-zero);
+  position: absolute;
+  left: 0; top: 1px;
+  font-family: Montserrat, sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--red);
+  border-radius: 5px;
+  padding: 2px 6px;
+}
+ol.steps b{ font-family: Montserrat, sans-serif; text-transform: uppercase; font-size: 13px; color: var(--red); display: block; }
+
+/* ---------- info panels ------------------------------------------------- */
+.panel{
+  margin-bottom: 14px;
+  padding: 18px 20px;
+  border: 2px solid var(--red-line);
+  border-radius: var(--radius);
+  background: var(--red-tint);
+}
+.panel.plain{ background: transparent; }
+.panel > *:last-child{ margin-bottom: 0; }
+.panel-title{
+  margin: 0 0 14px;
+  font-family: Montserrat, sans-serif;
+  font-size: 17px;
+  font-weight: 900;
+  text-transform: uppercase;
+  color: var(--red);
+  text-align: center;
+  line-height: 1.2;
+}
+.panel h3{ margin: 18px 0 8px; }
+.panel h3:first-of-type{ margin-top: 0; }
+
+ul.bullets{ list-style: none; margin: 0 0 10px; padding: 0; }
+ul.bullets li{
+  position: relative;
+  padding-left: 16px;
+  margin-bottom: 5px;
+  font-size: 13.5px;
+  line-height: 1.45;
+}
+ul.bullets li::before{
+  content: "•";
+  position: absolute;
+  left: 2px;
+  color: var(--red);
+  font-weight: 700;
+}
+ul.bullets li:last-child{ margin-bottom: 0; }
+
+.callout{
+  margin: 14px 0;
+  padding: 10px 14px;
+  border-left: 4px solid var(--red);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  background: rgba(107,7,7,.13);
+  font-size: 13.5px;
+}
+.agree{
+  margin: 4px 0 18px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-soft);
+}
+
+/* ---------- price leaders --------------------------------------------- */
+.leader{ display: flex; align-items: baseline; gap: 8px; margin-bottom: 7px; font-size: 14px; }
+.leader .fill{ flex: 1 1 auto; border-bottom: 2px dotted var(--red-line); transform: translateY(-4px); }
+.leader .amt{ font-family: Montserrat, sans-serif; font-weight: 700; font-size: 13px; color: var(--red); white-space: nowrap; }
+.leader .amt.free{ color: #1d7a3d; }
+
+/* ---------- price tiers with examples ---------------------------------- */
+.tier{
+  display: grid;
+  grid-template-columns: 104px 1fr auto;
+  gap: 14px;
+  align-items: center;
+  margin-bottom: 10px;
+  padding: 12px;
+  border: 2px solid var(--red-line);
+  border-radius: var(--radius);
+  background: var(--red-tint);
+  transition: border-color .2s ease;
+}
+.tier:hover{ border-color: var(--red); }
+.tier h4{ font-size: 13.5px; letter-spacing: .03em; margin-bottom: 3px; }
+.tier p{ margin: 0; font-size: 12.5px; color: var(--text-soft); }
+.tier .amt{
+  font-family: Montserrat, sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--red);
+  white-space: nowrap;
+  padding-left: 6px;
+}
+.tier .amt.free{ color: #1d7a3d; }
+
+figure.shot{
+  margin: 0;
+  position: relative;
+  overflow: hidden;
+  border: 2px solid var(--red-line);
+  border-radius: 7px;
+  background: #fff;
+  cursor: zoom-in;
+}
+.tier figure.shot{ aspect-ratio: 1; }
+.tier figure.shot img{ width: 100%; height: 100%; object-fit: cover; }
+.tier figure.shot figcaption{ display: none; }
+
+figure.shot.empty{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  text-align: center;
+  font-size: 9.5px;
+  line-height: 1.3;
+  color: var(--text-faint);
+  text-transform: lowercase;
+  background: transparent;
+  border-style: dashed;
+  cursor: default;
+}
+
+/* ---------- buttons ---------------------------------------------------- */
+.btn{
+  display: inline-block;
+  padding: 11px 22px;
+  border-radius: var(--radius);
+  background: var(--red);
+  color: #fff;
+  font-family: Nunito, sans-serif;
+  font-size: 13px;
+  text-transform: lowercase;
+  text-decoration: none;
+  transition: background .2s ease, transform .2s ease;
+}
+.btn:hover{ background: var(--red-soft); transform: translateY(-1px); }
+.btn.block{ display: block; text-align: center; }
+
+/* ---------- portfolio --------------------------------------------------- */
+.work{ column-count: 2; column-gap: 10px; }
+.work figure{
+  margin: 0 0 10px;
+  break-inside: avoid;
+  border: 2px solid var(--red-line);
+  border-radius: var(--radius);
+  background: var(--red-tint);
+  position: relative;
+  overflow: hidden;
+  transition: transform .2s ease, border-color .2s ease;
+}
+.work figure:hover{ transform: translateY(-2px); border-color: var(--red); }
+.work img{ display: block; width: 100%; height: auto; }
+.work figcaption{
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  padding: 7px 9px;
+  font-size: 11.5px;
+  color: #fff;
+  background: rgba(107,7,7,.85);
+  text-transform: lowercase;
+}
+
+/* ---------- lightbox ------------------------------------------------------ */
+figure.shot, .portrait img{ cursor: zoom-in; }
+
+.lightbox{
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(20,4,4,.92);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 54px 18px 64px;
+  animation: fade .25s ease both;
+}
+.lightbox[hidden]{ display: none; }
+
+.lb-stage{
+  flex: 1 1 auto;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  touch-action: none;
+}
+.lb-stage img{
+  max-width: 100%;
+  max-height: 100%;
+  border-radius: var(--radius);
+  background: #fff;
+  cursor: zoom-in;
+  transform-origin: center center;
+  transition: transform .28s cubic-bezier(.22,1,.36,1);
+  user-select: none;
+  -webkit-user-drag: none;
+}
+.lb-stage.zoomed img{ cursor: grab; transition: none; }
+.lb-stage.zoomed.dragging img{ cursor: grabbing; }
+
+.lb-caption{
+  margin: 12px 0 0;
+  color: #fff;
+  font-size: 12.5px;
+  text-transform: lowercase;
+  text-align: center;
+  opacity: .8;
+}
+.lb-count{ opacity: .5; }
+
+.lb-btn{
+  position: absolute;
+  z-index: 2;
+  border: 0;
+  width: 42px; height: 42px;
+  border-radius: var(--radius);
+  background: var(--red);
+  color: #fff;
+  font-family: Nunito, sans-serif;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .2s ease, transform .2s ease;
+}
+.lb-btn:hover{ background: var(--red-soft); transform: translateY(-1px); }
+.lb-close{ top: 14px; right: 14px; }
+.lb-prev{ left: 14px; top: 50%; margin-top: -21px; }
+.lb-next{ right: 14px; top: 50%; margin-top: -21px; }
+.lb-hint{
+  position: absolute;
+  left: 0; right: 0; bottom: 16px;
+  text-align: center;
+  color: #fff;
+  opacity: .4;
+  font-size: 11px;
+  text-transform: lowercase;
+  pointer-events: none;
+}
+
+body.lb-open{ overflow: hidden; }
+
+/* ---------- contact cards ------------------------------------------------ */
+.contacts{ display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+.contacts a{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 2px solid var(--red-line);
+  border-radius: var(--radius);
+  text-decoration: none;
+  color: var(--text);
+  background: var(--red-tint);
+  transition: background .2s ease, transform .2s ease;
+}
+.contacts a:hover{ background: rgba(107,7,7,.13); transform: translateY(-1px); }
+.contacts svg{ width: 18px; height: 18px; flex: 0 0 auto; fill: var(--red); }
+.contacts small{ display: block; font-size: 11px; color: var(--text-faint); text-transform: lowercase; }
+.contacts b{ font-family: Montserrat, sans-serif; font-size: 12.5px; color: var(--red); text-transform: uppercase; }
+
+/* ---------- footer icons -------------------------------------------------- */
+.icons{
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 4px;
+}
+.icons a{
+  width: 42px; height: 42px;
+  border-radius: var(--radius);
+  background: var(--red);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .2s ease, transform .2s ease;
+}
+.icons a:hover{ background: var(--red-soft); transform: translateY(-2px); }
+.icons svg{ width: 17px; height: 17px; fill: #fff; }
+
+.credit{
+  margin-top: 14px;
+  text-align: center;
+  font-size: 11px;
+  color: var(--text-faint);
+  text-transform: lowercase;
+}
+
+/* ---------- responsive ---------------------------------------------------- */
+@media (max-width: 760px){
+  .card{ margin: 14px auto; padding: 22px 18px 20px; min-height: 0; border-radius: var(--radius); }
+  .home{ grid-template-columns: 1fr; gap: 20px; text-align: center; }
+  .portrait{ max-width: 230px; margin: 0 auto; }
+  .grid2, .grid3, .contacts{ grid-template-columns: 1fr; }
+  .work{ column-count: 1; }
+  .tier{ grid-template-columns: 76px 1fr auto; gap: 10px; padding: 10px; }
+  .tier p{ font-size: 11.5px; }
+  .tier .amt{ font-size: 13px; }
+  h1{ font-size: 28px; }
+  .nav a{ flex: 1 1 88px; font-size: 12px; }
+}
+
+@media (prefers-reduced-motion: reduce){
+  *{ animation: none !important; transition: none !important; }
+  html{ scroll-behavior: auto; }
+}
 </style>
 </head>
 
-<body class="font-body text-white/80 antialiased">
+<body>
 
-<!-- ====================== BACKGROUND ====================== -->
-<div class="fixed inset-0 -z-50 bg-fallback"></div>
-<div class="fixed inset-0 -z-40 bg-photo"></div>
-<div class="fixed inset-0 -z-30 bg-gradient-to-b from-ink/70 via-ink/45 to-ink/90 backdrop-blur-[2px]"></div>
-<div class="fixed inset-0 -z-20 grain pointer-events-none"></div>
+<main class="card">
 
-<!-- ====================== PAGE ====================== -->
-<main class="relative mx-auto w-full max-w-2xl px-5 pb-24 pt-16 sm:pt-24">
-
-  <!-- ---------- HERO ---------- -->
-  <header class="reveal text-center">
-    <div class="mx-auto mb-6 h-24 w-24 rounded-full p-[2px] bg-gradient-to-br from-accent via-accent2 to-accent/20">
-      <div class="flex h-full w-full items-center justify-center rounded-full bg-panel">
-        <!-- Replace with: <img src="assets/avatar.jpg" class="h-full w-full rounded-full object-cover" alt="avatar"> -->
-        <svg viewBox="0 0 24 24" class="h-10 w-10 text-accent" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 2.5 21 7.5v9L12 21.5 3 16.5v-9z"/><path d="M12 21.5v-9"/><path d="m21 7.5-9 5-9-5"/>
-        </svg>
-      </div>
-    </div>
-
-    <p class="mb-3 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.18em] text-white/60">
-      <span class="relative flex h-2 w-2">
-        <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
-        <span class="relative inline-flex h-2 w-2 rounded-full bg-emerald-400"></span>
-      </span>
-      Commissions Open
-    </p>
-
-    <h1 class="font-display text-4xl font-bold tracking-tight text-white sm:text-5xl">BERYL</h1>
-    <p class="mt-3 text-sm leading-relaxed text-white/55 sm:text-base">
-      Fortnite 3D Render Artist<br class="sm:hidden" />
-      <span class="text-white/35">Skins · Posing · Scene Builds · Blender</span>
-    </p>
-
-    <!-- quick socials -->
-    <div class="mt-6 flex items-center justify-center gap-3">
-      <a href="https://x.com/berylls_" target="_blank" rel="noopener" aria-label="Twitter / X"
-         class="group flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 transition hover:-translate-y-0.5 hover:border-accent/50 hover:bg-accent/10">
-        <svg viewBox="0 0 24 24" class="h-4 w-4 fill-white/70 transition group-hover:fill-accent"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-      </a>
-      <a href="https://discord.com/users/541007839595069441" target="_blank" rel="noopener" aria-label="Discord"
-         class="group flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 transition hover:-translate-y-0.5 hover:border-accent/50 hover:bg-accent/10">
-        <svg viewBox="0 0 24 24" class="h-4 w-4 fill-white/70 transition group-hover:fill-accent"><path d="M20.317 4.369A19.79 19.79 0 0 0 15.432 3a13.9 13.9 0 0 0-.617 1.267 18.3 18.3 0 0 0-5.63 0A13 13 0 0 0 8.57 3a19.7 19.7 0 0 0-4.885 1.372C.533 9.046-.32 13.605.099 18.1a19.9 19.9 0 0 0 6.026 3.043 14.6 14.6 0 0 0 1.29-2.093 13 13 0 0 1-2.032-.973c.171-.124.338-.253.5-.386a14.2 14.2 0 0 0 12.234 0c.164.14.33.269.5.386-.648.38-1.33.706-2.037.975a14.4 14.4 0 0 0 1.29 2.092 19.8 19.8 0 0 0 6.03-3.044c.5-5.177-.838-9.706-3.584-13.73ZM8.02 15.331c-1.183 0-2.157-1.085-2.157-2.419s.955-2.42 2.157-2.42 2.176 1.096 2.157 2.42c0 1.334-.955 2.42-2.157 2.42Zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419s.955-2.42 2.157-2.42 2.176 1.096 2.156 2.42c0 1.334-.954 2.42-2.156 2.42Z"/></svg>
-      </a>
-      <a href="https://buymeacoffee.com/berylls_" target="_blank" rel="noopener" aria-label="Buy Me a Coffee"
-         class="group flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 transition hover:-translate-y-0.5 hover:border-accent/50 hover:bg-accent/10">
-        <svg viewBox="0 0 24 24" class="h-4 w-4 stroke-white/70 transition group-hover:stroke-accent" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8h1a3 3 0 0 1 0 6h-1"/><path d="M3 8h14v6a5 5 0 0 1-5 5H8a5 5 0 0 1-5-5z"/><path d="M6 2v2M10 2v2M14 2v2"/></svg>
-      </a>
-    </div>
-
-    <!-- stat strip -->
-    <div class="mt-8 grid grid-cols-3 divide-x divide-white/[0.07] overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur-md">
-      <div class="px-2 py-4">
-        <p class="font-display text-lg font-semibold text-white">2<span class="text-accent">/3</span></p>
-        <p class="mt-0.5 text-[10px] uppercase tracking-[0.14em] text-white/40">Slots left</p>
-      </div>
-      <div class="px-2 py-4">
-        <p class="font-display text-lg font-semibold text-white">5–14<span class="text-accent">d</span></p>
-        <p class="mt-0.5 text-[10px] uppercase tracking-[0.14em] text-white/40">Turnaround</p>
-      </div>
-      <div class="px-2 py-4">
-        <p class="font-display text-lg font-semibold text-white">120<span class="text-accent">+</span></p>
-        <p class="mt-0.5 text-[10px] uppercase tracking-[0.14em] text-white/40">Delivered</p>
-      </div>
-    </div>
-  </header>
-
-  <!-- ---------- QUICK NAV ---------- -->
-  <nav class="reveal mt-10 flex flex-wrap justify-center gap-2">
-    <a href="#commission-info"   class="rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-xs font-medium tracking-wide text-white/60 backdrop-blur-md transition hover:border-accent/40 hover:bg-accent/10 hover:text-white">Info</a>
-    <a href="#commission-prices" class="rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-xs font-medium tracking-wide text-white/60 backdrop-blur-md transition hover:border-accent/40 hover:bg-accent/10 hover:text-white">Prices</a>
-    <a href="#terms"             class="rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-xs font-medium tracking-wide text-white/60 backdrop-blur-md transition hover:border-accent/40 hover:bg-accent/10 hover:text-white">Terms</a>
-    <a href="#process"           class="rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-xs font-medium tracking-wide text-white/60 backdrop-blur-md transition hover:border-accent/40 hover:bg-accent/10 hover:text-white">Process</a>
-    <a href="#portfolio"         class="rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-xs font-medium tracking-wide text-white/60 backdrop-blur-md transition hover:border-accent/40 hover:bg-accent/10 hover:text-white">Work</a>
-    <a href="#contact"           class="rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-xs font-medium tracking-wide text-white/60 backdrop-blur-md transition hover:border-accent/40 hover:bg-accent/10 hover:text-white">Contact</a>
+  <!-- ====================== NAV ====================== -->
+  <nav class="nav">
+    <a href="#home"     data-tab="home">home</a>
+    <a href="#info"     data-tab="info">info</a>
+    <a href="#prices"   data-tab="prices">prices</a>
+    <a href="#terms"    data-tab="terms">terms</a>
+    <a href="#process"  data-tab="process">ordering</a>
+    <a href="#contact"  data-tab="contact">contact</a>
   </nav>
 
-  <!-- ---------- ACCORDION SECTIONS ---------- -->
-  <div class="mt-10 space-y-3">
+  <hr class="zig" />
 
-    <!-- ===== COMMISSION INFO ===== -->
-    <section id="commission-info" class="panel reveal scroll-mt-24 overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur-md transition hover:border-white/20">
-      <button type="button" class="panel-btn flex w-full items-center gap-4 px-5 py-5 text-left text-white/80 transition hover:text-white" aria-expanded="false" aria-controls="body-commission-info">
-        <span class="panel-dot h-2 w-2 shrink-0 rounded-full bg-white/25 transition"></span>
-        <span class="flex-1">
-          <span class="block font-display text-base font-semibold tracking-wide sm:text-lg">COMMISSION INFO</span>
-          <span class="mt-0.5 block text-xs text-white/40">Fortnite renders — what I make and what you get</span>
-        </span>
-        <svg class="chev h-4 w-4 shrink-0 text-white/40 transition-transform duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-      </button>
+  <!-- ====================== TABS ====================== -->
+  <div class="tabs">
 
-      <div class="panel-body" id="body-commission-info">
+    <!-- ---------- HOME ---------- -->
+    <section class="tab on" id="home">
+      <div class="home">
+        <div class="portrait">
+          <!-- the placeholder below stays visible until assets/beryl-bunny.jpg exists -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2.5 21 7.5v9L12 21.5 3 16.5v-9z"/><path d="M12 21.5v-9"/><path d="m21 7.5-9 5-9-5"/>
+          </svg>
+          <img src="assets/beryl-bunny.jpg" alt="Beryl — bunny suit render" onerror="this.remove()" />
+        </div>
+
         <div>
-          <div class="space-y-6 border-t border-white/[0.07] px-5 pb-6 pt-5 text-sm leading-relaxed text-white/60">
-            <p>
-              Hey! I make <span class="text-white">Fortnite 3D renders</span> in
-              <span class="text-white">Blender</span>. You tell me which skin you want, what pose you're after and
-              what kind of scene you're imagining — I set up the character, pose it, build the lighting and render
-              the final shot. Great for profile pictures, banners, thumbnails and montage art.
-            </p>
+          <p class="badge"><span class="dot"></span> commissions open</p>
+          <h1>Beryl's Commissions!</h1>
+          <p class="sub" style="margin-top:6px">
+            Fortnite 3D render artist · skins, posing &amp; scene builds, all made in <strong>Blender</strong>.
+          </p>
 
-            <div>
-              <h3 class="mb-3 font-display text-xs font-semibold uppercase tracking-[0.16em] text-accent">What I can do</h3>
-              <ul class="grid gap-2 sm:grid-cols-2">
-                <li class="flex gap-2"><span class="text-accent">→</span> Fortnite skin renders</li>
-                <li class="flex gap-2"><span class="text-accent">→</span> Custom posing</li>
-                <li class="flex gap-2"><span class="text-accent">→</span> Multi-character scenes</li>
-                <li class="flex gap-2"><span class="text-accent">→</span> Custom scene builds</li>
-                <li class="flex gap-2"><span class="text-accent">→</span> Props &amp; weapons (pickaxes, backblings)</li>
-                <li class="flex gap-2"><span class="text-accent">→</span> Alt character styles / edit styles</li>
-                <li class="flex gap-2"><span class="text-accent">→</span> Lighting &amp; mood setup</li>
-                <li class="flex gap-2"><span class="text-accent">→</span> PFPs, banners &amp; thumbnails</li>
-              </ul>
-            </div>
+          <p style="margin-top:14px">
+            I take your favourite skin, pose it, light it and build a scene around it — perfect for
+            <span class="mark">profile pictures</span>, banners, thumbnails and montage art.
+          </p>
+          <p>
+            Prices are in the <a href="#prices" data-tab="prices">prices</a> tab, and please read the
+            <a href="#terms" data-tab="terms">terms</a> before ordering. Ask me anything you're unsure about!
+          </p>
 
-            <div>
-              <h3 class="mb-3 font-display text-xs font-semibold uppercase tracking-[0.16em] text-accent">What you receive</h3>
-              <ul class="space-y-2">
-                <li class="flex gap-2"><span class="text-white/25">01</span> Final render as a high-res <span class="text-white">PNG</span> (transparent version included)</li>
-                <li class="flex gap-2"><span class="text-white/25">02</span> Any aspect ratio you need — <span class="text-white">PFP, banner or thumbnail</span> crops</li>
-                <li class="flex gap-2"><span class="text-white/25">03</span> Gradient or solid background, free of charge</li>
-                <li class="flex gap-2"><span class="text-white/25">04</span> WIP previews at the posing and lighting stages</li>
-                <li class="flex gap-2"><span class="text-white/25">05</span> Watermark-free files once the payment clears</li>
-              </ul>
-            </div>
-
-            <div class="grid gap-3 sm:grid-cols-3">
-              <div class="rounded-xl border border-white/10 bg-white/[0.03] p-4">
-                <p class="text-[10px] uppercase tracking-[0.14em] text-white/35">Turnaround</p>
-                <p class="mt-1 font-display text-sm text-white">5 – 14 days</p>
-              </div>
-              <div class="rounded-xl border border-white/10 bg-white/[0.03] p-4">
-                <p class="text-[10px] uppercase tracking-[0.14em] text-white/35">Revisions</p>
-                <p class="mt-1 font-display text-sm text-white">2 free rounds</p>
-              </div>
-              <div class="rounded-xl border border-white/10 bg-white/[0.03] p-4">
-                <p class="text-[10px] uppercase tracking-[0.14em] text-white/35">Payment</p>
-                <p class="mt-1 font-display text-sm text-white">Buy Me a Coffee</p>
-              </div>
-            </div>
+          <div class="stats">
+            <div><b>2/3</b><span>slots left</span></div>
+            <div><b>5–14d</b><span>turnaround</span></div>
+            <div><b>120+</b><span>delivered</span></div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ===== COMMISSION PRICES ===== -->
-    <section id="commission-prices" class="panel reveal scroll-mt-24 overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur-md transition hover:border-white/20">
-      <button type="button" class="panel-btn flex w-full items-center gap-4 px-5 py-5 text-left text-white/80 transition hover:text-white" aria-expanded="false" aria-controls="body-commission-prices">
-        <span class="panel-dot h-2 w-2 shrink-0 rounded-full bg-white/25 transition"></span>
-        <span class="flex-1">
-          <span class="block font-display text-base font-semibold tracking-wide sm:text-lg">COMMISSION PRICES</span>
-          <span class="mt-0.5 block text-xs text-white/40">Skin renders &amp; extras · all prices in USD</span>
-        </span>
-        <svg class="chev h-4 w-4 shrink-0 text-white/40 transition-transform duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-      </button>
+    <!-- ---------- INFO ---------- -->
+    <section class="tab" id="info">
+      <h2>Commission info</h2>
+      <p class="faint" style="margin-bottom:16px">fortnite renders — what I make and what you get</p>
 
-      <div class="panel-body" id="body-commission-prices">
-        <div>
-          <div class="space-y-7 border-t border-white/[0.07] px-5 pb-6 pt-5 text-sm text-white/60">
+      <p style="margin-bottom:18px">
+        Hey! I make <strong>Fortnite 3D renders</strong> in <strong>Blender</strong>. You tell me which skin you want,
+        what pose you're after and what kind of scene you're imagining — I set up the character, pose it, build the
+        lighting and render the final shot.
+      </p>
 
-            <!-- Normal skin -->
-            <div>
-              <h3 class="mb-1 font-display text-xs font-semibold uppercase tracking-[0.16em] text-accent">Normal Skin</h3>
-              <p class="mb-4 text-xs text-white/40">A skin that is already in-game (no changes made)</p>
-              <div class="space-y-2.5">
-                <div class="leader"><span class="text-white/70">Portrait <span class="text-white/35">(shoulders up)</span></span><span class="fill"></span><span class="font-display font-semibold text-white">13 USD</span></div>
-                <div class="leader"><span class="text-white/70">Half body <span class="text-white/35">(waist up)</span></span><span class="fill"></span><span class="font-display font-semibold text-white">15 USD</span></div>
-                <div class="leader"><span class="text-white/70">Full body</span><span class="fill"></span><span class="font-display font-semibold text-white">17 USD</span></div>
-              </div>
-              <p class="mt-3 text-xs text-white/40">(+55% for additional skin)</p>
-            </div>
+      <!-- ===== rules & info ===== -->
+      <div class="panel">
+        <p class="panel-title">Commission rules &amp; info</p>
 
-            <!-- Extra -->
-            <div class="rounded-xl border border-accent/20 bg-accent/[0.06] p-4">
-              <h3 class="mb-3 font-display text-xs font-semibold uppercase tracking-[0.16em] text-accent">Extra</h3>
-              <div class="space-y-2.5">
-                <div class="leader"><span class="text-white/70">Props</span><span class="fill"></span><span class="font-display font-semibold text-white">2 USD</span></div>
-                <div class="leader"><span class="text-white/70">Custom Scene Build</span><span class="fill"></span><span class="font-display font-semibold text-white">7 USD</span></div>
-                <div class="leader"><span class="text-white/70">Gradient / Solid Background</span><span class="fill"></span><span class="font-display font-semibold text-emerald-400">Free</span></div>
-                <div class="leader"><span class="text-white/70">Alt Character Styles</span><span class="fill"></span><span class="font-display font-semibold text-white">3 USD</span></div>
-              </div>
-            </div>
+        <h3>Content</h3>
+        <ul class="bullets">
+          <li>SFW only — no NSFW or suggestive posing</li>
+          <li>Mild blood and horror lighting are fine</li>
+          <li>Nothing hateful, and nothing made to harass someone</li>
+        </ul>
 
-            <p class="border-t border-white/[0.07] pt-4 text-xs leading-relaxed text-white/35">
-              If you are unsure of anything, feel free to ask me about it! All prices are in
-              <span class="text-white/60">USD</span> and paid through
-              <span class="text-white/60">Buy Me a Coffee</span>. Watermarked previews are sent until the payment clears.
-            </p>
+        <h3>Payment</h3>
+        <ul class="bullets">
+          <li>Everything goes through <strong>Buy Me a Coffee</strong>, in <strong>USD</strong></li>
+          <li>Full payment upfront, before I start</li>
+          <li>Your slot is reserved once the payment clears</li>
+          <li>Unpaid after 7 days — the slot goes to the next person in queue</li>
+        </ul>
 
-            <a href="#contact" class="group inline-flex w-full items-center justify-center gap-2 rounded-xl bg-accent px-5 py-3.5 font-display text-sm font-semibold text-ink transition hover:bg-accent2">
-              Request a quote
-              <svg class="h-4 w-4 transition-transform group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-            </a>
-          </div>
+        <h3>Turnaround</h3>
+        <ul class="bullets">
+          <li>Usually <strong>5 to 14 days</strong>, depending on the queue</li>
+          <li>Two free revision rounds — one at posing, one at lighting</li>
+          <li>Extra revision rounds are 2 USD each</li>
+        </ul>
+
+        <h3>Delivery</h3>
+        <ul class="bullets">
+          <li>Sent over Discord or X, whichever we started on</li>
+          <li>Watermarked previews until the payment clears</li>
+          <li>I may post your render in my portfolio and on my socials</li>
+          <li>If you are unsure of something, feel free to dm me!</li>
+        </ul>
+
+        <div class="callout">
+          I only work with skins that are <strong>already in-game</strong> — I can't model or rip anything that hasn't
+          been released yet.
         </div>
       </div>
+
+      <p class="agree">By commissioning me you agree to the <a href="#terms" data-tab="terms">terms of service</a>.</p>
+
+      <!-- ===== what I need ===== -->
+      <div class="panel plain">
+        <p class="panel-title">Here's what I need from you!</p>
+        <ul class="bullets">
+          <li><strong>Commission type &amp; size</strong> — portrait, half body or full body</li>
+          <li><strong>Skin name</strong>, and the style if it has more than one</li>
+          <li><strong>Extra characters or props</strong> — pickaxes, backblings, held items</li>
+          <li><strong>References</strong> — a screenshot, an emote name or another render all work</li>
+          <li><strong>Where it's going</strong> — pfp, banner, thumbnail or montage art, so I can frame it right</li>
+          <li><strong>Specific requests</strong> — camera angle, mood, lighting, background</li>
+          <li><strong>Where to send it</strong> — your Discord or X handle</li>
+        </ul>
+        <p class="faint" style="margin-top:12px">
+          One message with all of it is perfect — it saves us both a round of questions.
+        </p>
+      </div>
+
+      <!-- ===== what you get ===== -->
+      <div class="panel">
+        <p class="panel-title">What you receive</p>
+        <ul class="bullets">
+          <li>Final render as a high-res <strong>PNG</strong>, transparent version included</li>
+          <li>Any aspect ratio you need — <strong>pfp, banner or thumbnail</strong> crops</li>
+          <li>Gradient or solid background, free of charge</li>
+          <li>WIP previews at the posing and lighting stages</li>
+          <li>Watermark-free files once the payment clears</li>
+        </ul>
+      </div>
+
+      <h3>What I can do</h3>
+      <div class="grid2">
+        <ul class="ticks">
+          <li>Fortnite skin renders</li>
+          <li>Custom posing</li>
+          <li>Multi-character scenes</li>
+          <li>Custom scene builds</li>
+        </ul>
+        <ul class="ticks">
+          <li>Props &amp; weapons (pickaxes, backblings)</li>
+          <li>Alt character styles / edit styles</li>
+          <li>Lighting &amp; mood setup</li>
+          <li>PFPs, banners &amp; thumbnails</li>
+        </ul>
+      </div>
+
+      <hr class="zig thin" />
+
+      <div class="grid3">
+        <div class="box"><span class="faint">turnaround</span><br /><b style="font-family:Montserrat,sans-serif;color:var(--red)">5 – 14 days</b></div>
+        <div class="box"><span class="faint">revisions</span><br /><b style="font-family:Montserrat,sans-serif;color:var(--red)">2 free rounds</b></div>
+        <div class="box"><span class="faint">payment</span><br /><b style="font-family:Montserrat,sans-serif;color:var(--red)">Buy Me a Coffee</b></div>
+      </div>
+
+      <p style="margin:18px 0 10px; text-align:center; font-family:Montserrat,sans-serif; font-weight:700; text-transform:uppercase; color:var(--red)">
+        Ready to bring your idea into 3D?
+      </p>
+      <a class="btn block" href="#contact" data-tab="contact">start a commission →</a>
     </section>
 
-    <!-- ===== TERMS OF SERVICE ===== -->
-    <section id="terms" class="panel reveal scroll-mt-24 overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur-md transition hover:border-white/20">
-      <button type="button" class="panel-btn flex w-full items-center gap-4 px-5 py-5 text-left text-white/80 transition hover:text-white" aria-expanded="false" aria-controls="body-terms">
-        <span class="panel-dot h-2 w-2 shrink-0 rounded-full bg-white/25 transition"></span>
-        <span class="flex-1">
-          <span class="block font-display text-base font-semibold tracking-wide sm:text-lg">TERMS &amp; RULES</span>
-          <span class="mt-0.5 block text-xs text-white/40">Please read before ordering — this is binding</span>
-        </span>
-        <svg class="chev h-4 w-4 shrink-0 text-white/40 transition-transform duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-      </button>
+    <!-- ---------- PRICES ---------- -->
+    <section class="tab" id="prices">
+      <h2>Commission prices</h2>
+      <p class="faint" style="margin-bottom:16px">skin renders &amp; extras · all prices in usd</p>
 
-      <div class="panel-body" id="body-terms">
+      <h3>Normal skin</h3>
+      <p class="faint" style="margin-top:-4px; margin-bottom:12px">a skin that is already in-game (no changes made) · click any example to enlarge</p>
+
+      <div class="tier">
+        <figure class="shot empty">example coming soon</figure>
         <div>
-          <div class="space-y-6 border-t border-white/[0.07] px-5 pb-6 pt-5 text-sm leading-relaxed text-white/60">
-
-            <div class="grid gap-4 sm:grid-cols-2">
-              <div class="rounded-xl border border-emerald-400/20 bg-emerald-400/[0.05] p-4">
-                <h3 class="mb-2.5 font-display text-xs font-semibold uppercase tracking-[0.16em] text-emerald-400">I will do</h3>
-                <ul class="space-y-1.5 text-[13px]">
-                  <li>Any in-game Fortnite skin</li>
-                  <li>Custom poses &amp; multi-character scenes</li>
-                  <li>Props, pickaxes &amp; backblings</li>
-                  <li>Alt / edit styles of a skin</li>
-                  <li>Mild blood &amp; horror lighting</li>
-                  <li>PFPs, banners, thumbnails, montage art</li>
-                </ul>
-              </div>
-              <div class="rounded-xl border border-rose-400/20 bg-rose-400/[0.05] p-4">
-                <h3 class="mb-2.5 font-display text-xs font-semibold uppercase tracking-[0.16em] text-rose-400">I won't do</h3>
-                <ul class="space-y-1.5 text-[13px]">
-                  <li>NSFW / suggestive posing</li>
-                  <li>Hateful or discriminatory themes</li>
-                  <li>Heavy gore</li>
-                  <li>Modeling a skin from scratch</li>
-                  <li>Custom skin designs / concepts</li>
-                  <li>Anything meant to harass someone</li>
-                </ul>
-              </div>
-            </div>
-
-            <div>
-              <h3 class="mb-3 font-display text-xs font-semibold uppercase tracking-[0.16em] text-accent">Before you order</h3>
-              <ul class="space-y-2">
-                <li class="flex gap-3"><span class="text-white/25">01</span><span>Tell me the <span class="text-white">exact skin name</span> (and the style, if it has more than one).</span></li>
-                <li class="flex gap-3"><span class="text-white/25">02</span><span>I only work with skins that are <span class="text-white">already in-game</span>. I can't model or rip anything that hasn't been released.</span></li>
-                <li class="flex gap-3"><span class="text-white/25">03</span><span>Send pose references — a screenshot, an emote name or another render all work fine.</span></li>
-                <li class="flex gap-3"><span class="text-white/25">04</span><span>Say where it's going (PFP, banner, thumbnail) so I can frame it properly.</span></li>
-                <li class="flex gap-3"><span class="text-white/25">05</span><span>Some skins have parts that are hard to rig or pose. If yours is one of them I'll tell you before you pay.</span></li>
-              </ul>
-            </div>
-
-            <div>
-              <h3 class="mb-3 font-display text-xs font-semibold uppercase tracking-[0.16em] text-accent">Payment</h3>
-              <ul class="space-y-2">
-                <li class="flex gap-3"><span class="text-white/25">01</span><span>All payments go through <span class="text-white">Buy Me a Coffee</span> — I'll send you the link once we've agreed on the details.</span></li>
-                <li class="flex gap-3"><span class="text-white/25">02</span><span>Payment is made <span class="text-white">upfront</span>, before I start working.</span></li>
-                <li class="flex gap-3"><span class="text-white/25">03</span><span>Your slot is only reserved once the payment clears.</span></li>
-                <li class="flex gap-3"><span class="text-white/25">04</span><span>If it isn't paid within 7 days, the slot goes to the next person in queue.</span></li>
-              </ul>
-            </div>
-
-            <div>
-              <h3 class="mb-3 font-display text-xs font-semibold uppercase tracking-[0.16em] text-accent">Revisions</h3>
-              <ul class="space-y-2">
-                <li class="flex gap-3"><span class="text-white/25">01</span><span><span class="text-white">2 free revision rounds</span> are included — one at the posing stage, one at the lighting stage.</span></li>
-                <li class="flex gap-3"><span class="text-white/25">02</span><span>Small fixes (background color, crop, camera nudges) are always free.</span></li>
-                <li class="flex gap-3"><span class="text-white/25">03</span><span>Changing the skin or the whole scene after the pose is approved counts as a new commission.</span></li>
-                <li class="flex gap-3"><span class="text-white/25">04</span><span>Extra revision rounds beyond the free ones are <span class="text-white">2 USD each</span>.</span></li>
-              </ul>
-            </div>
-
-            <div>
-              <h3 class="mb-3 font-display text-xs font-semibold uppercase tracking-[0.16em] text-accent">Refunds &amp; cancellation</h3>
-              <ul class="space-y-2">
-                <li class="flex gap-3"><span class="text-white/25">01</span><span>Full refund if I haven't started yet.</span></li>
-                <li class="flex gap-3"><span class="text-white/25">02</span><span>Partial refund based on progress once work has begun.</span></li>
-                <li class="flex gap-3"><span class="text-white/25">03</span><span><span class="text-white">No refunds</span> after the final files are delivered.</span></li>
-                <li class="flex gap-3"><span class="text-white/25">04</span><span>If a skin turns out to be impossible to pose properly, I'll cancel and refund you in full.</span></li>
-                <li class="flex gap-3"><span class="text-white/25">05</span><span>I may cancel and refund if the request breaks these rules.</span></li>
-              </ul>
-            </div>
-
-            <div>
-              <h3 class="mb-3 font-display text-xs font-semibold uppercase tracking-[0.16em] text-accent">Usage &amp; credit</h3>
-              <ul class="space-y-2">
-                <li class="flex gap-3"><span class="text-white/25">01</span><span>Renders are for <span class="text-white">personal use</span> — PFPs, banners, thumbnails, posting them on your socials.</span></li>
-                <li class="flex gap-3"><span class="text-white/25">02</span><span><span class="text-white">No resale, no NFTs</span>, and no selling the render as merch.</span></li>
-                <li class="flex gap-3"><span class="text-white/25">03</span><span>Please <span class="text-white">credit me</span> when you post it.</span></li>
-                <li class="flex gap-3"><span class="text-white/25">04</span><span>Don't claim the render as your own work, re-upload it as yours, or edit it beyond simple cropping.</span></li>
-                <li class="flex gap-3"><span class="text-white/25">05</span><span>Don't feed the files into AI training or image generators.</span></li>
-                <li class="flex gap-3"><span class="text-white/25">06</span><span>I keep the right to post the render in my portfolio and on social media.</span></li>
-              </ul>
-            </div>
-
-            <p class="rounded-xl border border-white/10 bg-white/[0.03] p-4 text-xs leading-relaxed text-white/45">
-              All Fortnite characters, skins and assets belong to <span class="text-white/70">Epic Games</span>. I'm not
-              affiliated with or endorsed by Epic Games — you're paying for my posing, scene building and render work,
-              not for the character models themselves. By sending a commission request you confirm that you've read and
-              agree to everything above.
-            </p>
-          </div>
+          <h4>Portrait</h4>
+          <p>Shoulders up — the classic profile picture crop.</p>
         </div>
+        <span class="amt">13 USD</span>
       </div>
+
+      <div class="tier">
+        <figure class="shot">
+          <img src="assets/work-mirror-selfie.jpg" alt="Half body render, fisheye bathroom scene" loading="lazy" />
+          <figcaption>half body · fisheye lighting</figcaption>
+        </figure>
+        <div>
+          <h4>Half body</h4>
+          <p>Waist up — more room for the outfit and the pose.</p>
+        </div>
+        <span class="amt">15 USD</span>
+      </div>
+
+      <div class="tier">
+        <figure class="shot">
+          <img src="assets/work-full-body.jpg" alt="Full body render on a gradient backdrop" loading="lazy" />
+          <figcaption>full body · studio backdrop</figcaption>
+        </figure>
+        <div>
+          <h4>Full body</h4>
+          <p>The whole character, head to boots.</p>
+        </div>
+        <span class="amt">17 USD</span>
+      </div>
+
+      <p class="faint" style="margin-top:8px">(+55% for each additional skin)</p>
+
+      <h3>Extra</h3>
+
+      <div class="tier">
+        <figure class="shot empty">example coming soon</figure>
+        <div>
+          <h4>Props</h4>
+          <p>Pickaxes, backblings and other held items.</p>
+        </div>
+        <span class="amt">2 USD</span>
+      </div>
+
+      <div class="tier">
+        <figure class="shot">
+          <img src="assets/work-drive-in.jpg" alt="Drive-in cinema scene build" loading="lazy" />
+          <figcaption>custom scene · drive-in</figcaption>
+        </figure>
+        <div>
+          <h4>Custom scene build</h4>
+          <p>A whole environment built around the character.</p>
+        </div>
+        <span class="amt">7 USD</span>
+      </div>
+
+      <div class="tier">
+        <figure class="shot">
+          <img src="assets/beryl-bunny.jpg" alt="Render on a plain background" loading="lazy" />
+          <figcaption>solid background</figcaption>
+        </figure>
+        <div>
+          <h4>Gradient / solid background</h4>
+          <p>A clean backdrop instead of a full scene.</p>
+        </div>
+        <span class="amt free">Free</span>
+      </div>
+
+      <div class="tier">
+        <figure class="shot empty">example coming soon</figure>
+        <div>
+          <h4>Alt character styles</h4>
+          <p>The edit styles a skin ships with.</p>
+        </div>
+        <span class="amt">3 USD</span>
+      </div>
+
+      <hr class="zig thin" />
+
+      <h3>More work</h3>
+      <p class="faint" style="margin-top:-4px; margin-bottom:12px">scenes, group shots and other recent commissions</p>
+
+      <div class="work">
+        <figure class="shot">
+          <img src="assets/work-midnight-trio.jpg" alt="Three characters in a night forest" loading="lazy" />
+          <figcaption>trio · night scene</figcaption>
+        </figure>
+        <figure class="shot">
+          <img src="assets/work-fortober.jpg" alt="Halloween trick or treat street scene" loading="lazy" />
+          <figcaption>fortober · street scene</figcaption>
+        </figure>
+        <figure class="shot">
+          <img src="assets/work-neon-grid.jpg" alt="Two characters floating over a neon grid" loading="lazy" />
+          <figcaption>duo · neon grid</figcaption>
+        </figure>
+        <figure class="shot">
+          <img src="assets/work-illustration.jpg" alt="2D illustration of a character in a bunny hoodie" loading="lazy" />
+          <figcaption>illustration · 2d</figcaption>
+        </figure>
+      </div>
+
+      <a class="btn block" href="https://x.com/berylls_" target="_blank" rel="noopener" style="margin-top:6px">see more renders on twitter ↗</a>
+
+      <hr class="zig thin" />
+
+      <p class="faint">
+        If you are unsure of anything, feel free to ask me about it! All prices are in <strong>USD</strong> and paid
+        through <strong>Buy Me a Coffee</strong>. Watermarked previews are sent until the payment clears.
+      </p>
+
+      <a class="btn block" href="#contact" data-tab="contact" style="margin-top:16px">request a quote →</a>
     </section>
 
-    <!-- ===== PROCESS ===== -->
-    <section id="process" class="panel reveal scroll-mt-24 overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur-md transition hover:border-white/20">
-      <button type="button" class="panel-btn flex w-full items-center gap-4 px-5 py-5 text-left text-white/80 transition hover:text-white" aria-expanded="false" aria-controls="body-process">
-        <span class="panel-dot h-2 w-2 shrink-0 rounded-full bg-white/25 transition"></span>
-        <span class="flex-1">
-          <span class="block font-display text-base font-semibold tracking-wide sm:text-lg">HOW TO ORDER</span>
-          <span class="mt-0.5 block text-xs text-white/40">Five steps from idea to final render</span>
-        </span>
-        <svg class="chev h-4 w-4 shrink-0 text-white/40 transition-transform duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-      </button>
+    <!-- ---------- TERMS ---------- -->
+    <section class="tab" id="terms">
+      <h2>Terms of service</h2>
+      <p class="faint" style="margin-bottom:16px">please read before ordering — this is binding</p>
 
-      <div class="panel-body" id="body-process">
-        <div>
-          <div class="border-t border-white/[0.07] px-5 pb-6 pt-5 text-sm leading-relaxed text-white/60">
-            <ol class="relative space-y-6 border-l border-white/10 pl-6">
-              <li class="relative">
-                <span class="absolute -left-[31px] flex h-5 w-5 items-center justify-center rounded-full border border-accent/40 bg-ink font-display text-[10px] font-bold text-accent">1</span>
-                <p class="font-display text-sm font-semibold text-white">Reach out</p>
-                <p class="mt-1 text-[13px]">DM me on X or Discord with the skin name, the pose you want and any references.</p>
-              </li>
-              <li class="relative">
-                <span class="absolute -left-[31px] flex h-5 w-5 items-center justify-center rounded-full border border-accent/40 bg-ink font-display text-[10px] font-bold text-accent">2</span>
-                <p class="font-display text-sm font-semibold text-white">Quote &amp; slot</p>
-                <p class="mt-1 text-[13px]">I reply within 48h with a final price and an estimated delivery date. If it works, I send you my Buy Me a Coffee link.</p>
-              </li>
-              <li class="relative">
-                <span class="absolute -left-[31px] flex h-5 w-5 items-center justify-center rounded-full border border-accent/40 bg-ink font-display text-[10px] font-bold text-accent">3</span>
-                <p class="font-display text-sm font-semibold text-white">Posing</p>
-                <p class="mt-1 text-[13px]">I set the skin up and pose it, then send you a quick viewport preview to approve. First revision round happens here.</p>
-              </li>
-              <li class="relative">
-                <span class="absolute -left-[31px] flex h-5 w-5 items-center justify-center rounded-full border border-accent/40 bg-ink font-display text-[10px] font-bold text-accent">4</span>
-                <p class="font-display text-sm font-semibold text-white">Scene &amp; lighting</p>
-                <p class="mt-1 text-[13px]">Background, props and lighting go in, then a watermarked test render. Second revision round happens here.</p>
-              </li>
-              <li class="relative">
-                <span class="absolute -left-[31px] flex h-5 w-5 items-center justify-center rounded-full border border-accent/40 bg-ink font-display text-[10px] font-bold text-accent">5</span>
-                <p class="font-display text-sm font-semibold text-white">Delivery</p>
-                <p class="mt-1 text-[13px]">Final render at full resolution — no watermark, transparent version included, cropped for wherever you're posting it.</p>
-              </li>
-            </ol>
-          </div>
+      <div class="grid2">
+        <div class="box">
+          <h3 style="margin-top:0">I will do</h3>
+          <ul class="ticks">
+            <li>Any in-game Fortnite skin</li>
+            <li>Custom poses &amp; multi-character scenes</li>
+            <li>Props, pickaxes &amp; backblings</li>
+            <li>Alt / edit styles of a skin</li>
+            <li>Mild blood &amp; horror lighting</li>
+            <li>PFPs, banners, thumbnails, montage art</li>
+          </ul>
+        </div>
+        <div class="box plain">
+          <h3 style="margin-top:0">I won't do</h3>
+          <ul class="crosses">
+            <li>NSFW / suggestive posing</li>
+            <li>Hateful or discriminatory themes</li>
+            <li>Heavy gore</li>
+            <li>Modeling a skin from scratch</li>
+            <li>Custom skin designs / concepts</li>
+            <li>Anything meant to harass someone</li>
+          </ul>
         </div>
       </div>
+
+      <h3>Skins I can work with</h3>
+      <ol class="steps">
+        <li>I only work with skins that are <strong>already in-game</strong>. I can't model or rip anything that hasn't been released.</li>
+        <li>Some skins have parts that are hard to rig or pose. If yours is one of them I'll tell you before you pay.</li>
+        <li>Everything I need from you before we start is listed in the <a href="#info" data-tab="info">info</a> tab.</li>
+      </ol>
+
+      <h3>Payment</h3>
+      <ol class="steps">
+        <li>All payments go through <strong>Buy Me a Coffee</strong> — I'll send you the link once we've agreed on the details.</li>
+        <li>Payment is made <strong>upfront</strong>, before I start working.</li>
+        <li>Your slot is only reserved once the payment clears.</li>
+        <li>If it isn't paid within 7 days, the slot goes to the next person in queue.</li>
+      </ol>
+
+      <h3>Revisions</h3>
+      <ol class="steps">
+        <li><strong>2 free revision rounds</strong> are included — one at the posing stage, one at the lighting stage.</li>
+        <li>Small fixes (background colour, crop, camera nudges) are always free.</li>
+        <li>Changing the skin or the whole scene after the pose is approved counts as a new commission.</li>
+        <li>Extra revision rounds beyond the free ones are <strong>2 USD each</strong>.</li>
+      </ol>
+
+      <h3>Refunds &amp; cancellation</h3>
+      <ol class="steps">
+        <li>Full refund if I haven't started yet.</li>
+        <li>Partial refund based on progress once work has begun.</li>
+        <li><strong>No refunds</strong> after the final files are delivered.</li>
+        <li>If a skin turns out to be impossible to pose properly, I'll cancel and refund you in full.</li>
+        <li>I may cancel and refund if the request breaks these rules.</li>
+      </ol>
+
+      <h3>Usage &amp; credit</h3>
+      <ol class="steps">
+        <li>Renders are for <strong>personal use</strong> — PFPs, banners, thumbnails, posting them on your socials.</li>
+        <li><strong>No resale, no NFTs</strong>, and no selling the render as merch.</li>
+        <li>Please <strong>credit me</strong> when you post it.</li>
+        <li>Don't claim the render as your own work, re-upload it as yours, or edit it beyond simple cropping.</li>
+        <li>Don't feed the files into AI training or image generators.</li>
+        <li>I keep the right to post the render in my portfolio and on social media.</li>
+      </ol>
+
+      <hr class="zig thin" />
+
+      <p class="faint">
+        All Fortnite characters, skins and assets belong to <strong>Epic Games</strong>. I'm not affiliated with or
+        endorsed by Epic Games — you're paying for my posing, scene building and render work, not for the character
+        models themselves. By sending a commission request you confirm that you've read and agree to everything above.
+      </p>
     </section>
 
-    <!-- ===== PORTFOLIO ===== -->
-    <section id="portfolio" class="panel reveal scroll-mt-24 overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur-md transition hover:border-white/20">
-      <button type="button" class="panel-btn flex w-full items-center gap-4 px-5 py-5 text-left text-white/80 transition hover:text-white" aria-expanded="false" aria-controls="body-portfolio">
-        <span class="panel-dot h-2 w-2 shrink-0 rounded-full bg-white/25 transition"></span>
-        <span class="flex-1">
-          <span class="block font-display text-base font-semibold tracking-wide sm:text-lg">PREVIOUS WORK</span>
-          <span class="mt-0.5 block text-xs text-white/40">A few recent commissions</span>
-        </span>
-        <svg class="chev h-4 w-4 shrink-0 text-white/40 transition-transform duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-      </button>
+    <!-- ---------- PROCESS ---------- -->
+    <section class="tab" id="process">
+      <h2>How to order</h2>
+      <p class="faint" style="margin-bottom:16px">five steps from idea to final render</p>
 
-      <div class="panel-body" id="body-portfolio">
-        <div>
-          <div class="border-t border-white/[0.07] px-5 pb-6 pt-5">
-            <!-- Swap each placeholder for: <img src="assets/work-1.jpg" alt="" class="h-full w-full object-cover"> -->
-            <div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
-              <figure class="group relative aspect-square overflow-hidden rounded-xl border border-white/10 bg-gradient-to-br from-accent/25 to-white/[0.02]">
-                <figcaption class="absolute inset-0 flex items-end p-3 text-[11px] text-white/50 transition group-hover:text-white">Full body · Custom pose</figcaption>
-              </figure>
-              <figure class="group relative aspect-square overflow-hidden rounded-xl border border-white/10 bg-gradient-to-br from-indigo-500/25 to-white/[0.02]">
-                <figcaption class="absolute inset-0 flex items-end p-3 text-[11px] text-white/50 transition group-hover:text-white">Portrait · PFP</figcaption>
-              </figure>
-              <figure class="group relative aspect-square overflow-hidden rounded-xl border border-white/10 bg-gradient-to-br from-emerald-500/25 to-white/[0.02]">
-                <figcaption class="absolute inset-0 flex items-end p-3 text-[11px] text-white/50 transition group-hover:text-white">Duo · Scene build</figcaption>
-              </figure>
-              <figure class="group relative aspect-square overflow-hidden rounded-xl border border-white/10 bg-gradient-to-br from-rose-500/25 to-white/[0.02]">
-                <figcaption class="absolute inset-0 flex items-end p-3 text-[11px] text-white/50 transition group-hover:text-white">Half body · Props</figcaption>
-              </figure>
-              <figure class="group relative aspect-square overflow-hidden rounded-xl border border-white/10 bg-gradient-to-br from-amber-500/25 to-white/[0.02]">
-                <figcaption class="absolute inset-0 flex items-end p-3 text-[11px] text-white/50 transition group-hover:text-white">Alt style · Render</figcaption>
-              </figure>
-              <figure class="group relative aspect-square overflow-hidden rounded-xl border border-white/10 bg-gradient-to-br from-sky-500/25 to-white/[0.02]">
-                <figcaption class="absolute inset-0 flex items-end p-3 text-[11px] text-white/50 transition group-hover:text-white">Banner · Wide crop</figcaption>
-              </figure>
-            </div>
+      <ol class="steps">
+        <li>
+          <b>Reach out</b>
+          DM me on X or Discord with the skin name, the pose you want and any references.
+        </li>
+        <li>
+          <b>Quote &amp; slot</b>
+          I reply within 48h with a final price and an estimated delivery date. If it works, I send you my Buy Me a Coffee link.
+        </li>
+        <li>
+          <b>Posing</b>
+          I set the skin up and pose it, then send you a quick viewport preview to approve. First revision round happens here.
+        </li>
+        <li>
+          <b>Scene &amp; lighting</b>
+          Background, props and lighting go in, then a watermarked test render. Second revision round happens here.
+        </li>
+        <li>
+          <b>Delivery</b>
+          Final render at full resolution — no watermark, transparent version included, cropped for wherever you're posting it.
+        </li>
+      </ol>
 
-            <a href="https://x.com/berylls_" target="_blank" rel="noopener"
-               class="mt-4 flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] px-5 py-3 text-xs font-medium text-white/60 transition hover:border-accent/40 hover:text-white">
-              See more renders on my Twitter
-              <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
-            </a>
-          </div>
-        </div>
-      </div>
+      <a class="btn block" href="#contact" data-tab="contact" style="margin-top:6px">start a commission →</a>
     </section>
+    <!-- ---------- CONTACT ---------- -->
+    <section class="tab" id="contact">
+      <h2>Contact</h2>
+      <p class="faint" style="margin-bottom:16px">where to send your brief</p>
 
-    <!-- ===== CONTACT ===== -->
-    <section id="contact" class="panel reveal scroll-mt-24 overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur-md transition hover:border-white/20">
-      <button type="button" class="panel-btn flex w-full items-center gap-4 px-5 py-5 text-left text-white/80 transition hover:text-white" aria-expanded="false" aria-controls="body-contact">
-        <span class="panel-dot h-2 w-2 shrink-0 rounded-full bg-white/25 transition"></span>
-        <span class="flex-1">
-          <span class="block font-display text-base font-semibold tracking-wide sm:text-lg">CONTACT</span>
-          <span class="mt-0.5 block text-xs text-white/40">Where to send your brief</span>
-        </span>
-        <svg class="chev h-4 w-4 shrink-0 text-white/40 transition-transform duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-      </button>
+      <p>
+        The fastest way to reach me is a DM on X or Discord. Please include: the skin name, the pose you want,
+        any references and where you'll be using the render — it saves us both a round of questions.
+      </p>
 
-      <div class="panel-body" id="body-contact">
-        <div>
-          <div class="space-y-4 border-t border-white/[0.07] px-5 pb-6 pt-5 text-sm text-white/60">
-            <p>
-              The fastest way to reach me is a DM on X or Discord. Please include: the skin name, the pose
-              you want, any references and where you'll be using the render — it saves us both a round of questions.
-            </p>
-
-            <div class="grid gap-3 sm:grid-cols-2">
-              <a href="https://x.com/berylls_" target="_blank" rel="noopener"
-                 class="group flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-4 transition hover:-translate-y-0.5 hover:border-accent/40 hover:bg-accent/[0.07]">
-                <svg viewBox="0 0 24 24" class="h-4 w-4 shrink-0 fill-white/60 transition group-hover:fill-accent"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-                <span>
-                  <span class="block text-[11px] uppercase tracking-[0.14em] text-white/35">Twitter / X</span>
-                  <span class="block text-[13px] text-white">@berylls_</span>
-                </span>
-              </a>
-              <a href="https://discord.com/users/541007839595069441" target="_blank" rel="noopener"
-                 class="group flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-4 transition hover:-translate-y-0.5 hover:border-accent/40 hover:bg-accent/[0.07]">
-                <svg viewBox="0 0 24 24" class="h-4 w-4 shrink-0 fill-white/60 transition group-hover:fill-accent"><path d="M20.317 4.369A19.79 19.79 0 0 0 15.432 3a13.9 13.9 0 0 0-.617 1.267 18.3 18.3 0 0 0-5.63 0A13 13 0 0 0 8.57 3a19.7 19.7 0 0 0-4.885 1.372C.533 9.046-.32 13.605.099 18.1a19.9 19.9 0 0 0 6.026 3.043 14.6 14.6 0 0 0 1.29-2.093 13 13 0 0 1-2.032-.973c.171-.124.338-.253.5-.386a14.2 14.2 0 0 0 12.234 0c.164.14.33.269.5.386-.648.38-1.33.706-2.037.975a14.4 14.4 0 0 0 1.29 2.092 19.8 19.8 0 0 0 6.03-3.044c.5-5.177-.838-9.706-3.584-13.73ZM8.02 15.331c-1.183 0-2.157-1.085-2.157-2.419s.955-2.42 2.157-2.42 2.176 1.096 2.157 2.42c0 1.334-.955 2.42-2.157 2.42Zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419s.955-2.42 2.157-2.42 2.176 1.096 2.156 2.42c0 1.334-.954 2.42-2.156 2.42Z"/></svg>
-                <span>
-                  <span class="block text-[11px] uppercase tracking-[0.14em] text-white/35">Discord</span>
-                  <span class="block text-[13px] text-white">berylls_</span>
-                </span>
-              </a>
-              <a href="https://buymeacoffee.com/berylls_" target="_blank" rel="noopener"
-                 class="group flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-4 transition hover:-translate-y-0.5 hover:border-accent/40 hover:bg-accent/[0.07]">
-                <svg viewBox="0 0 24 24" class="h-4 w-4 shrink-0 stroke-white/60 transition group-hover:stroke-accent" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8h1a3 3 0 0 1 0 6h-1"/><path d="M3 8h14v6a5 5 0 0 1-5 5H8a5 5 0 0 1-5-5z"/><path d="M6 2v2M10 2v2M14 2v2"/></svg>
-                <span>
-                  <span class="block text-[11px] uppercase tracking-[0.14em] text-white/35">Buy Me a Coffee</span>
-                  <span class="block text-[13px] text-white">Payments &amp; tips</span>
-                </span>
-              </a>
-            </div>
-
-            <p class="text-xs text-white/35">Response time is usually under 48 hours. Timezone: GMT+3.</p>
-          </div>
-        </div>
+      <div class="contacts" style="margin-top:16px">
+        <a href="https://x.com/berylls_" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          <span><small>twitter / x</small><b>@berylls_</b></span>
+        </a>
+        <a href="https://discord.com/users/541007839595069441" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24"><path d="M20.317 4.369A19.79 19.79 0 0 0 15.432 3a13.9 13.9 0 0 0-.617 1.267 18.3 18.3 0 0 0-5.63 0A13 13 0 0 0 8.57 3a19.7 19.7 0 0 0-4.885 1.372C.533 9.046-.32 13.605.099 18.1a19.9 19.9 0 0 0 6.026 3.043 14.6 14.6 0 0 0 1.29-2.093 13 13 0 0 1-2.032-.973c.171-.124.338-.253.5-.386a14.2 14.2 0 0 0 12.234 0c.164.14.33.269.5.386-.648.38-1.33.706-2.037.975a14.4 14.4 0 0 0 1.29 2.092 19.8 19.8 0 0 0 6.03-3.044c.5-5.177-.838-9.706-3.584-13.73ZM8.02 15.331c-1.183 0-2.157-1.085-2.157-2.419s.955-2.42 2.157-2.42 2.176 1.096 2.157 2.42c0 1.334-.955 2.42-2.157 2.42Zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419s.955-2.42 2.157-2.42 2.176 1.096 2.156 2.42c0 1.334-.954 2.42-2.156 2.42Z"/></svg>
+          <span><small>discord</small><b>berylls_</b></span>
+        </a>
+        <a href="https://buymeacoffee.com/berylls_" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="stroke:var(--red)"><path d="M17 8h1a3 3 0 0 1 0 6h-1"/><path d="M3 8h14v6a5 5 0 0 1-5 5H8a5 5 0 0 1-5-5z"/><path d="M6 2v2M10 2v2M14 2v2"/></svg>
+          <span><small>buy me a coffee</small><b>payments</b></span>
+        </a>
       </div>
+
+      <p class="faint" style="margin-top:16px">Response time is usually under 48 hours. Timezone: GMT+3.</p>
     </section>
 
   </div>
 
-  <!-- ---------- FOOTER ---------- -->
-  <footer class="reveal mt-16 text-center">
-    <p class="mb-5 font-display text-xs uppercase tracking-[0.22em] text-white/30">Find me elsewhere</p>
+  <!-- ====================== FOOTER ====================== -->
+  <hr class="zig" />
 
-    <div class="flex flex-wrap items-center justify-center gap-2.5">
-      <a href="https://x.com/berylls_" target="_blank" rel="noopener"
-         class="group flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-2.5 text-xs font-medium text-white/60 backdrop-blur-md transition hover:-translate-y-0.5 hover:border-accent/50 hover:bg-accent/10 hover:text-white">
-        <svg viewBox="0 0 24 24" class="h-3.5 w-3.5 fill-white/60 transition group-hover:fill-accent"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-        Twitter
-      </a>
-      <a href="https://discord.com/users/541007839595069441" target="_blank" rel="noopener"
-         class="group flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-2.5 text-xs font-medium text-white/60 backdrop-blur-md transition hover:-translate-y-0.5 hover:border-accent/50 hover:bg-accent/10 hover:text-white">
-        <svg viewBox="0 0 24 24" class="h-3.5 w-3.5 fill-white/60 transition group-hover:fill-accent"><path d="M20.317 4.369A19.79 19.79 0 0 0 15.432 3a13.9 13.9 0 0 0-.617 1.267 18.3 18.3 0 0 0-5.63 0A13 13 0 0 0 8.57 3a19.7 19.7 0 0 0-4.885 1.372C.533 9.046-.32 13.605.099 18.1a19.9 19.9 0 0 0 6.026 3.043 14.6 14.6 0 0 0 1.29-2.093 13 13 0 0 1-2.032-.973c.171-.124.338-.253.5-.386a14.2 14.2 0 0 0 12.234 0c.164.14.33.269.5.386-.648.38-1.33.706-2.037.975a14.4 14.4 0 0 0 1.29 2.092 19.8 19.8 0 0 0 6.03-3.044c.5-5.177-.838-9.706-3.584-13.73ZM8.02 15.331c-1.183 0-2.157-1.085-2.157-2.419s.955-2.42 2.157-2.42 2.176 1.096 2.157 2.42c0 1.334-.955 2.42-2.157 2.42Zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419s.955-2.42 2.157-2.42 2.176 1.096 2.156 2.42c0 1.334-.954 2.42-2.156 2.42Z"/></svg>
-        Discord
-      </a>
-      <a href="https://buymeacoffee.com/berylls_" target="_blank" rel="noopener"
-         class="group flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-2.5 text-xs font-medium text-white/60 backdrop-blur-md transition hover:-translate-y-0.5 hover:border-accent/50 hover:bg-accent/10 hover:text-white">
-        <svg viewBox="0 0 24 24" class="h-3.5 w-3.5 stroke-white/60 transition group-hover:stroke-accent" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8h1a3 3 0 0 1 0 6h-1"/><path d="M3 8h14v6a5 5 0 0 1-5 5H8a5 5 0 0 1-5-5z"/><path d="M6 2v2M10 2v2M14 2v2"/></svg>
-        Buy Me a Coffee
-      </a>
-    </div>
+  <div class="icons">
+    <a href="https://x.com/berylls_" target="_blank" rel="noopener" aria-label="Twitter / X">
+      <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+    </a>
+    <a href="https://discord.com/users/541007839595069441" target="_blank" rel="noopener" aria-label="Discord">
+      <svg viewBox="0 0 24 24"><path d="M20.317 4.369A19.79 19.79 0 0 0 15.432 3a13.9 13.9 0 0 0-.617 1.267 18.3 18.3 0 0 0-5.63 0A13 13 0 0 0 8.57 3a19.7 19.7 0 0 0-4.885 1.372C.533 9.046-.32 13.605.099 18.1a19.9 19.9 0 0 0 6.026 3.043 14.6 14.6 0 0 0 1.29-2.093 13 13 0 0 1-2.032-.973c.171-.124.338-.253.5-.386a14.2 14.2 0 0 0 12.234 0c.164.14.33.269.5.386-.648.38-1.33.706-2.037.975a14.4 14.4 0 0 0 1.29 2.092 19.8 19.8 0 0 0 6.03-3.044c.5-5.177-.838-9.706-3.584-13.73ZM8.02 15.331c-1.183 0-2.157-1.085-2.157-2.419s.955-2.42 2.157-2.42 2.176 1.096 2.157 2.42c0 1.334-.955 2.42-2.157 2.42Zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419s.955-2.42 2.157-2.42 2.176 1.096 2.156 2.42c0 1.334-.954 2.42-2.156 2.42Z"/></svg>
+    </a>
+    <a href="https://buymeacoffee.com/berylls_" target="_blank" rel="noopener" aria-label="Buy Me a Coffee">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8h1a3 3 0 0 1 0 6h-1"/><path d="M3 8h14v6a5 5 0 0 1-5 5H8a5 5 0 0 1-5-5z"/><path d="M6 2v2M10 2v2M14 2v2"/></svg>
+    </a>
+  </div>
 
-    <div class="mx-auto mt-10 h-px w-24 bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
-
-    <p class="mt-6 text-[11px] text-white/25">
-      © <span id="year">2026</span> BERYL · Fortnite renders made in Blender · Not affiliated with Epic Games
-    </p>
-  </footer>
+  <p class="credit">© <span id="year">2026</span> beryl · fortnite renders made in blender · not affiliated with epic games</p>
 </main>
 
-<!-- ---------- BACK TO TOP ---------- -->
-<button id="toTop" aria-label="Back to top"
-        class="fixed bottom-6 right-6 z-50 flex h-11 w-11 translate-y-4 items-center justify-center rounded-full border border-white/10 bg-panel/80 text-white/60 opacity-0 backdrop-blur-md transition-all duration-300 hover:border-accent/50 hover:text-accent">
-  <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
-</button>
+<!-- ====================== LIGHTBOX ====================== -->
+<div class="lightbox" id="lightbox" hidden role="dialog" aria-modal="true" aria-label="image viewer">
+  <button class="lb-btn lb-close" id="lbClose" aria-label="close">✕</button>
+  <button class="lb-btn lb-prev"  id="lbPrev"  aria-label="previous image">‹</button>
+  <button class="lb-btn lb-next"  id="lbNext"  aria-label="next image">›</button>
+
+  <div class="lb-stage" id="lbStage">
+    <img id="lbImg" alt="" />
+  </div>
+
+  <p class="lb-caption"><span id="lbCap"></span> <span class="lb-count" id="lbCount"></span></p>
+  <p class="lb-hint">click the image to zoom · drag to pan · esc to close</p>
+</div>
 
 <script>
 (function () {
@@ -596,83 +1030,200 @@
 
   document.getElementById('year').textContent = new Date().getFullYear();
 
-  /* ---------- Accordions ---------- */
-  var panels = Array.prototype.slice.call(document.querySelectorAll('.panel'));
+  /* ---------- Sprinkle wallpaper ----------
+     Built here instead of being pasted in as a huge data URI. */
+  (function paper() {
+    var seed = 7;
+    function rnd() { seed = (seed * 1103515245 + 12345) % 2147483648; return seed / 2147483648; }
+    var S = 512, pts = [], marks = [], i, t, x, y, a, l, w;
+    for (i = 0; i < 110; i++) {
+      for (t = 0; t < 80; t++) {
+        x = rnd() * S; y = rnd() * S;
+        var clear = pts.every(function (p) { return (x - p[0]) * (x - p[0]) + (y - p[1]) * (y - p[1]) > 1156; });
+        if (clear) break;
+      }
+      pts.push([x, y]);
+      a = rnd() * 360; l = 9 + rnd() * 8; w = 2 + rnd() * 1.4;
+      marks.push("<rect x='" + x.toFixed(1) + "' y='" + y.toFixed(1) + "' width='" + l.toFixed(1) +
+                 "' height='" + w.toFixed(1) + "' rx='" + (w / 2).toFixed(1) +
+                 "' transform='rotate(" + a.toFixed(0) + " " + x.toFixed(1) + " " + y.toFixed(1) + ")'/>");
+    }
+    var svg = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' width='512' height='512'>" +
+              "<g fill='rgba(0,0,0,0.085)'>" + marks.join('') + "</g></svg>";
+    var css = document.createElement('style');
+    css.textContent = "body::before{background-image:url(\"data:image/svg+xml;charset=utf8," +
+                      encodeURIComponent(svg).replace(/'/g, '%27') + "\")}";
+    document.head.appendChild(css);
+  })();
 
-  function setOpen(panel, open) {
-    panel.classList.toggle('open', open);
-    var btn = panel.querySelector('.panel-btn');
-    if (btn) btn.setAttribute('aria-expanded', String(open));
+  /* ---------- Tabs ---------- */
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.tab'));
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('.nav a'));
+
+  function show(id, push) {
+    var target = document.getElementById(id);
+    if (!target || !target.classList.contains('tab')) return;
+
+    tabs.forEach(function (t) { t.classList.toggle('on', t === target); });
+    navLinks.forEach(function (a) { a.classList.toggle('active', a.getAttribute('data-tab') === id); });
+
+    if (push) history.replaceState(null, '', '#' + id);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  panels.forEach(function (panel) {
-    var btn = panel.querySelector('.panel-btn');
-    btn.addEventListener('click', function () {
-      var willOpen = !panel.classList.contains('open');
-      // Accordion behaviour: close the others.
-      panels.forEach(function (p) { if (p !== panel) setOpen(p, false); });
-      setOpen(panel, willOpen);
-      if (willOpen) {
-        history.replaceState(null, '', '#' + panel.id);
-        setTimeout(function () {
-          panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 120);
-      }
+  /* every link carrying data-tab switches tabs instead of jumping */
+  document.addEventListener('click', function (e) {
+    var link = e.target.closest('a[data-tab]');
+    if (!link) return;
+    e.preventDefault();
+    show(link.getAttribute('data-tab'), true);
+  });
+
+  window.addEventListener('hashchange', function () {
+    show(location.hash.replace('#', ''), false);
+  });
+
+  show(location.hash.replace('#', '') || 'home', false);
+
+  /* ---------- Lightbox ---------- */
+  var box     = document.getElementById('lightbox');
+  var stage   = document.getElementById('lbStage');
+  var lbImg   = document.getElementById('lbImg');
+  var lbCap   = document.getElementById('lbCap');
+  var lbCount = document.getElementById('lbCount');
+  var prevBtn = document.getElementById('lbPrev');
+  var nextBtn = document.getElementById('lbNext');
+
+  var list = [];      // [{src, cap}]
+  var index = 0;
+  var zoom = 1, panX = 0, panY = 0;
+  var ZOOM = 2.4;
+
+  function applyTransform() {
+    lbImg.style.transform = 'translate(' + panX + 'px,' + panY + 'px) scale(' + zoom + ')';
+  }
+  function resetZoom() {
+    zoom = 1; panX = 0; panY = 0;
+    stage.classList.remove('zoomed');
+    applyTransform();
+  }
+
+  function render() {
+    var item = list[index];
+    lbImg.src = item.src;
+    lbImg.alt = item.alt || item.cap || '';
+    lbCap.textContent = item.cap || '';
+    lbCount.textContent = list.length > 1 ? '(' + (index + 1) + '/' + list.length + ')' : '';
+    var many = list.length > 1;
+    prevBtn.hidden = !many;
+    nextBtn.hidden = !many;
+    resetZoom();
+  }
+
+  function open(items, i) {
+    list = items; index = i;
+    box.hidden = false;
+    document.body.classList.add('lb-open');
+    render();
+  }
+  function close() {
+    box.hidden = true;
+    document.body.classList.remove('lb-open');
+    lbImg.removeAttribute('src');
+  }
+  function step(dir) {
+    if (list.length < 2) return;
+    index = (index + dir + list.length) % list.length;
+    render();
+  }
+
+  /* open from any example shot (they all become one browsable set) */
+  document.addEventListener('click', function (e) {
+    var fig = e.target.closest('figure.shot:not(.empty)');
+    if (fig) {
+      var figures = Array.prototype.slice.call(document.querySelectorAll('figure.shot:not(.empty)'));
+      var items = figures.map(function (f) {
+        var img = f.querySelector('img');
+        var cap = f.querySelector('figcaption');
+        return { src: img.getAttribute('src'), alt: img.alt, cap: cap ? cap.textContent : '' };
+      });
+      open(items, figures.indexOf(fig));
+      return;
+    }
+    /* open from the home portrait */
+    var portrait = e.target.closest('.portrait');
+    if (portrait) {
+      var pic = portrait.querySelector('img');
+      if (pic) open([{ src: pic.getAttribute('src'), alt: pic.alt, cap: 'beryl' }], 0);
+    }
+  });
+
+  document.getElementById('lbClose').addEventListener('click', close);
+  prevBtn.addEventListener('click', function () { step(-1); });
+  nextBtn.addEventListener('click', function () { step(1); });
+
+  /* click the backdrop (not the image) to close */
+  box.addEventListener('click', function (e) {
+    if (e.target === box || e.target === stage) close();
+  });
+
+  /* click the image to toggle zoom, centred on where you clicked */
+  lbImg.addEventListener('click', function (e) {
+    e.stopPropagation();
+    if (moved) { moved = false; return; }   /* that click was the end of a pan */
+    if (zoom > 1) { resetZoom(); return; }
+    var r = lbImg.getBoundingClientRect();
+    var dx = (e.clientX - (r.left + r.width / 2));
+    var dy = (e.clientY - (r.top + r.height / 2));
+    zoom = ZOOM;
+    panX = -dx * (ZOOM - 1);
+    panY = -dy * (ZOOM - 1);
+    stage.classList.add('zoomed');
+    applyTransform();
+  });
+
+  /* drag to pan while zoomed (mouse + touch) */
+  var dragging = false, moved = false, startX = 0, startY = 0;
+  lbImg.addEventListener('pointerdown', function (e) {
+    if (zoom === 1) return;
+    dragging = true;
+    moved = false;
+    startX = e.clientX - panX;
+    startY = e.clientY - panY;
+    stage.classList.add('dragging');
+    lbImg.setPointerCapture(e.pointerId);
+  });
+  lbImg.addEventListener('pointermove', function (e) {
+    if (!dragging) return;
+    var nx = e.clientX - startX, ny = e.clientY - startY;
+    if (Math.abs(nx - panX) > 3 || Math.abs(ny - panY) > 3) moved = true;
+    panX = nx; panY = ny;
+    applyTransform();
+  });
+  ['pointerup', 'pointercancel'].forEach(function (ev) {
+    lbImg.addEventListener(ev, function () {
+      dragging = false;
+      stage.classList.remove('dragging');
     });
   });
 
-  /* ---------- Deep links (#commission-prices etc.) ---------- */
-  function openFromHash() {
-    var id = location.hash.replace('#', '');
-    if (!id) return;
-    var target = document.getElementById(id);
-    if (!target || !target.classList.contains('panel')) return;
-    panels.forEach(function (p) { setOpen(p, p === target); });
-    setTimeout(function () {
-      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 200);
-  }
-  window.addEventListener('hashchange', openFromHash);
-  openFromHash();
+  /* wheel zoom */
+  stage.addEventListener('wheel', function (e) {
+    if (box.hidden) return;
+    e.preventDefault();
+    var next = Math.min(4, Math.max(1, zoom + (e.deltaY < 0 ? .3 : -.3)));
+    if (next === 1) { resetZoom(); return; }
+    zoom = next;
+    stage.classList.add('zoomed');
+    applyTransform();
+  }, { passive: false });
 
-  /* ---------- Reveal on scroll ---------- */
-  var revealEls = document.querySelectorAll('.reveal');
-  if ('IntersectionObserver' in window) {
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry, i) {
-        if (entry.isIntersecting) {
-          setTimeout(function () { entry.target.classList.add('in'); }, i * 70);
-          io.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
-    revealEls.forEach(function (el) { io.observe(el); });
-  } else {
-    revealEls.forEach(function (el) { el.classList.add('in'); });
-  }
-
-  /* ---------- Back to top ---------- */
-  var toTop = document.getElementById('toTop');
-  function onScroll() {
-    var show = window.scrollY > 400;
-    toTop.classList.toggle('opacity-0', !show);
-    toTop.classList.toggle('translate-y-4', !show);
-    toTop.classList.toggle('pointer-events-none', !show);
-  }
-  window.addEventListener('scroll', onScroll, { passive: true });
-  onScroll();
-  toTop.addEventListener('click', function () {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  document.addEventListener('keydown', function (e) {
+    if (box.hidden) return;
+    if (e.key === 'Escape')     close();
+    if (e.key === 'ArrowLeft')  step(-1);
+    if (e.key === 'ArrowRight') step(1);
   });
-
-  /* ---------- Subtle parallax on the background photo ---------- */
-  var photo = document.querySelector('.bg-photo');
-  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (photo && !reduce) {
-    window.addEventListener('scroll', function () {
-      photo.style.transform = 'translateY(' + (window.scrollY * 0.12) + 'px) scale(1.06)';
-    }, { passive: true });
-  }
 })();
 </script>
 </body>
