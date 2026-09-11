@@ -198,7 +198,7 @@ code{
 /* ---------- stat strip ------------------------------------------------ */
 .stats{
   display: grid;
-  grid-template-columns: repeat(3,1fr);
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   gap: 8px;
   margin-top: 18px;
 }
@@ -608,9 +608,7 @@ body.lb-open{ overflow: hidden; }
           </p>
 
           <div class="stats">
-            <div><b>2/3</b><span>slots left</span></div>
-            <div><b>5–14d</b><span>turnaround</span></div>
-            <div><b>120+</b><span>delivered</span></div>
+            <div><b>2 days – 2 weeks</b><span>turnaround</span></div>
           </div>
         </div>
       </div>
@@ -648,22 +646,21 @@ body.lb-open{ overflow: hidden; }
 
         <h3>Turnaround</h3>
         <ul class="bullets">
-          <li>Usually <strong>5 to 14 days</strong>, depending on the queue</li>
+          <li>Turnaround time ranges from <strong>2 days to 2 weeks</strong></li>
           <li>Two free revision rounds — one at posing, one at lighting</li>
           <li>Extra revision rounds are 2 USD each</li>
         </ul>
 
         <h3>Delivery</h3>
         <ul class="bullets">
-          <li>Sent over Discord or X, whichever we started on</li>
+          <li>Completed commissions are delivered via <strong>email</strong></li>
           <li>Watermarked previews until the payment clears</li>
           <li>I may post your render in my portfolio and on my socials</li>
           <li>If you are unsure of something, feel free to dm me!</li>
         </ul>
 
         <div class="callout">
-          I only work with skins that are <strong>already in-game</strong> — I can't model or rip anything that hasn't
-          been released yet.
+          I only work with skins that are <strong>already in-game</strong>.
         </div>
       </div>
 
@@ -679,7 +676,7 @@ body.lb-open{ overflow: hidden; }
           <li><strong>References</strong> — a screenshot, an emote name or another render all work</li>
           <li><strong>Where it's going</strong> — pfp, banner, thumbnail or montage art, so I can frame it right</li>
           <li><strong>Specific requests</strong> — camera angle, mood, lighting, background</li>
-          <li><strong>Where to send it</strong> — your Discord or X handle</li>
+          <li><strong>Email address</strong> — for the final delivery</li>
         </ul>
         <p class="faint" style="margin-top:12px">
           One message with all of it is perfect — it saves us both a round of questions.
@@ -707,7 +704,6 @@ body.lb-open{ overflow: hidden; }
           <li>Custom scene builds</li>
         </ul>
         <ul class="ticks">
-          <li>Props &amp; weapons (pickaxes, backblings)</li>
           <li>Alt character styles / edit styles</li>
           <li>Lighting &amp; mood setup</li>
           <li>PFPs, banners &amp; thumbnails</li>
@@ -717,7 +713,7 @@ body.lb-open{ overflow: hidden; }
       <hr class="zig thin" />
 
       <div class="grid3">
-        <div class="box"><span class="faint">turnaround</span><br /><b style="font-family:Montserrat,sans-serif;color:var(--red)">5 – 14 days</b></div>
+        <div class="box"><span class="faint">turnaround</span><br /><b style="font-family:Montserrat,sans-serif;color:var(--red)">2 days – 2 weeks</b></div>
         <div class="box"><span class="faint">revisions</span><br /><b style="font-family:Montserrat,sans-serif;color:var(--red)">2 free rounds</b></div>
         <div class="box"><span class="faint">payment</span><br /><b style="font-family:Montserrat,sans-serif;color:var(--red)">Buy Me a Coffee</b></div>
       </div>
@@ -737,7 +733,10 @@ body.lb-open{ overflow: hidden; }
       <p class="faint" style="margin-top:-4px; margin-bottom:12px">a skin that is already in-game (no changes made) · click any example to enlarge</p>
 
       <div class="tier">
-        <figure class="shot empty">example coming soon</figure>
+        <figure class="shot">
+          <img src="assets/work-portrait.jpg" alt="Close up portrait render" loading="lazy" />
+          <figcaption>portrait · shoulders up</figcaption>
+        </figure>
         <div>
           <h4>Portrait</h4>
           <p>Shoulders up — the classic profile picture crop.</p>
@@ -774,7 +773,10 @@ body.lb-open{ overflow: hidden; }
       <h3>Extra</h3>
 
       <div class="tier">
-        <figure class="shot empty">example coming soon</figure>
+        <figure class="shot">
+          <img src="assets/work-props.jpg" alt="Backblings and a pickaxe" loading="lazy" />
+          <figcaption>props · backblings &amp; pickaxe</figcaption>
+        </figure>
         <div>
           <h4>Props</h4>
           <p>Pickaxes, backblings and other held items.</p>
@@ -785,7 +787,7 @@ body.lb-open{ overflow: hidden; }
       <div class="tier">
         <figure class="shot">
           <img src="assets/work-drive-in.jpg" alt="Drive-in cinema scene build" loading="lazy" />
-          <figcaption>custom scene · drive-in</figcaption>
+          <figcaption>custom scene build · drive-in</figcaption>
         </figure>
         <div>
           <h4>Custom scene build</h4>
@@ -807,7 +809,10 @@ body.lb-open{ overflow: hidden; }
       </div>
 
       <div class="tier">
-        <figure class="shot empty">example coming soon</figure>
+        <figure class="shot">
+          <img src="assets/work-alt-styles.jpg" alt="Alt style of a character" loading="lazy" />
+          <figcaption>alt style · remi rimel</figcaption>
+        </figure>
         <div>
           <h4>Alt character styles</h4>
           <p>The edit styles a skin ships with.</p>
@@ -822,20 +827,28 @@ body.lb-open{ overflow: hidden; }
 
       <div class="work">
         <figure class="shot">
+          <img src="assets/work-villa-trio.jpg" alt="Three characters posed in front of a villa" loading="lazy" />
+          <figcaption>full body · custom scene build · 3 skins</figcaption>
+        </figure>
+        <figure class="shot">
           <img src="assets/work-midnight-trio.jpg" alt="Three characters in a night forest" loading="lazy" />
-          <figcaption>trio · night scene</figcaption>
+          <figcaption>full body · custom scene build · 3 skins, props</figcaption>
         </figure>
         <figure class="shot">
           <img src="assets/work-fortober.jpg" alt="Halloween trick or treat street scene" loading="lazy" />
-          <figcaption>fortober · street scene</figcaption>
+          <figcaption>full body · custom scene build · multiple skins</figcaption>
+        </figure>
+        <figure class="shot">
+          <img src="assets/work-new-year.jpg" alt="New year party scene build" loading="lazy" />
+          <figcaption>custom scene build · group scene</figcaption>
         </figure>
         <figure class="shot">
           <img src="assets/work-neon-grid.jpg" alt="Two characters floating over a neon grid" loading="lazy" />
-          <figcaption>duo · neon grid</figcaption>
+          <figcaption>full body · custom scene build · 2 skins</figcaption>
         </figure>
         <figure class="shot">
-          <img src="assets/work-illustration.jpg" alt="2D illustration of a character in a bunny hoodie" loading="lazy" />
-          <figcaption>illustration · 2d</figcaption>
+          <img src="assets/work-illustration.jpg" alt="Half body render in a custom style" loading="lazy" />
+          <figcaption>half body · gradient background</figcaption>
         </figure>
       </div>
 
@@ -883,7 +896,7 @@ body.lb-open{ overflow: hidden; }
 
       <h3>Skins I can work with</h3>
       <ol class="steps">
-        <li>I only work with skins that are <strong>already in-game</strong>. I can't model or rip anything that hasn't been released.</li>
+        <li>I only work with skins that are <strong>already in-game</strong>.</li>
         <li>Some skins have parts that are hard to rig or pose. If yours is one of them I'll tell you before you pay.</li>
         <li>Everything I need from you before we start is listed in the <a href="#info" data-tab="info">info</a> tab.</li>
       </ol>
@@ -956,7 +969,7 @@ body.lb-open{ overflow: hidden; }
         </li>
         <li>
           <b>Delivery</b>
-          Final render at full resolution — no watermark, transparent version included, cropped for wherever you're posting it.
+          Final render sent to your email at full resolution — no watermark, transparent version included, cropped for wherever you're posting it.
         </li>
       </ol>
 
@@ -969,7 +982,8 @@ body.lb-open{ overflow: hidden; }
 
       <p>
         The fastest way to reach me is a DM on X or Discord. Please include: the skin name, the pose you want,
-        any references and where you'll be using the render — it saves us both a round of questions.
+        any references, where you'll be using the render and your <strong>email address</strong> — the final files
+        are delivered by email. The full list is in the <a href="#info" data-tab="info">info</a> tab.
       </p>
 
       <div class="contacts" style="margin-top:16px">
